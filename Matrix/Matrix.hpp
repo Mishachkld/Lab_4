@@ -5,21 +5,27 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
 
 namespace mt {
-    template<typename T, unsigned int n, unsigned int m>
+
+    template<class T>
     class Matrix {
     public:
-        Matrix(T object, unsigned N, unsigned M);
-        Matrix(const Matrix& temp);
+        Matrix(unsigned int n , unsigned int m);
+
+        Matrix(const Matrix &temp);
+
         ~Matrix();
 
+//        friend std::ostream& operator >> (std::ostream& outStream, const Matrix& temp);
     private:
-        T* matrix[n][m];
+        T **matrix;
 //        std::vector<std::vector<T>> matrix;
         unsigned int n_size;
         unsigned int m_size;
-        T object;
+//        T object;
+
 
         void fillByObject();
     };

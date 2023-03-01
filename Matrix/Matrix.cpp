@@ -7,33 +7,35 @@
 namespace mt {
 
 
-    template<typename T, unsigned int N, unsigned int M>
-    Matrix<T, N, M>::Matrix(T object, unsigned int n, unsigned int m) {
+    template<class T>
+    Matrix<T>::Matrix(unsigned int n , unsigned int m) {
         n_size = n;
         m_size = m;
-        this->object = object;
+        matrix = new T[n_size][m_size];
         fillByObject();
     }
 
-    template<typename T, unsigned int n, unsigned int m>
-    Matrix<T, n, m>::~Matrix() {
-        delete[] matrix
-    }
-
-    template<typename T, unsigned int n, unsigned int m>
-    void Matrix<T, n, m>::fillByObject() {
-        for (int i = 0; i < n_size; i++) {
-            for (int j = 0; j < m_size; j++) {
-                matrix[i][j] = object;
-            }
-        }
-    }
-
-    template<typename T, unsigned int n, unsigned int m>
-    Matrix<T, n, m>::Matrix(const Matrix &temp) {
+    template<class T>
+    Matrix<T>::Matrix(const Matrix &temp) {
         m_size = temp.m_size;
         n_size = temp.n_size;
-        object = temp.object;
+        matrix = new T[n_size][m_size];
+        std::copy(temp.matrix, temp.matrix + temp.n_size, matrix);
+        //        object = temp.object;
         fillByObject();
+    }
+
+    template<class  T>
+    Matrix<T>::~Matrix() {
+        delete[] matrix;
+    }
+
+    template<class  T>
+    void Matrix<T>::fillByObject() {
+        for (int i = 0; i < n_size; i++) {
+            for (int j = 0; j < m_size; j++) {
+                matrix[i][j] = 0;
+            }
+        }
     }
 }
