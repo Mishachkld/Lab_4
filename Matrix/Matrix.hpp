@@ -35,9 +35,24 @@ namespace mt {
             deleteMatrix();
         }
 
-        /// почему так
-        T *operator[] (const T& index){
-            return matrix[index];
+
+        T determinant(){
+            T result = 0;
+            if((n_size == m_size) and (n_size <= 3)){
+                if (n_size == 1)
+                    result = matrix[0][0];
+                else if(n_size == 2)
+                    result = matrix[0][0] * matrix[1][1] - matrix[1][2] * matrix[2][1];
+                else{
+                    for (int i = 0; i < n_size; i++) {
+                        for (int j = i; j < m_size; j++) {
+                            result = matrix[i][j];
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
 
         Matrix &operator=(const Matrix &temp) {
