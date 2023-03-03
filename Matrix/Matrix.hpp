@@ -4,10 +4,11 @@
 #pragma once
 
 #include <iostream>
+#include <cmath>
 
 namespace mt {
 
-    template<class T>
+    template<class T, class T1, class T2>
     class Matrix {
     public:
         Matrix(unsigned int n, unsigned int m) {
@@ -36,18 +37,28 @@ namespace mt {
         }
 
 
-        T determinant(){
+       /* T minor2(int k) {
             T result = 0;
-            if((n_size == m_size) and (n_size <= 3)){
+
+            for (int i = 0; i < n_size - 1; i++)
+                for (int j = 0; j < m_size - 1; j++)
+                        result +=
+            return result;
+        }*/
+
+        T determinant() {
+            T result = 0;
+            T **newMatrix2 = new T *[n_size - 1];
+            for (int i = 0; i < n_size; i++)
+                newMatrix2[i] = new T[m_size - 1];
+            if ((n_size == m_size) and (n_size <= 3)) {
                 if (n_size == 1)
                     result = matrix[0][0];
-                else if(n_size == 2)
-                    result = matrix[0][0] * matrix[1][1] - matrix[1][2] * matrix[2][1];
-                else{
-                    for (int i = 0; i < n_size; i++) {
-                        for (int j = i; j < m_size; j++) {
-                            result = matrix[i][j];
-                        }
+                else if (n_size == 2)
+                    result = (matrix[0][0] * matrix[1][1]) - (matrix[1][2] * matrix[2][1]);  /// ошибка выскаивает
+                else {
+                    for (int j = 0; j < m_size; j++) {
+                        result += pow(-1, 1 + j) * (matrix[0][j] * fillMinor(newMatrix2, j)); //(pow(-1, 1 + j)) *
                     }
                 }
             }
@@ -94,7 +105,7 @@ namespace mt {
 
         /// подумать
         Matrix operator*(const Matrix &temp) {
-            Matrix<T> newMatrix(n_size, temp.m_size);
+            Matrix<T, T1, T2> newMatrix(n_size, temp.m_size);
             for (int i = 0; i < n_size; i++)
                 for (int j = 0; j < newMatrix.m_size; j++)
                     for (int k = 0; k < newMatrix.m_size; k++)
@@ -129,10 +140,24 @@ namespace mt {
         unsigned int m_size;
 
         ///Functions
-        void fillByObject() {   /// заполнить матрицу объектами
+        T fillMinor(T **minor, int n) {   /// заполнить матрицу объектами
+            T result = 0;
+            int a = 1;
+            int b = 1;
             for (int i = 0; i < n_size; i++)
                 for (int j = 0; j < m_size; j++)
-                    matrix[i][j] = 0;
+                    if ((j != n) and (i != 0))
+                        minor[i][j] = matrix[i][j];
+            std::cout << minor[0][1];
+            for (int i = 0; i < n_size - 1; i++)
+                for (int j = 0; j < m_size - 1; j++){
+                    if (i == j)
+                        a *= minor[i][j];
+                    else
+                        b *= minor[i][j];
+                }
+            result = a - b;
+            return result;
         }
 
         void deleteMatrix() {
