@@ -37,33 +37,41 @@ namespace mt {
         }
 
 
-       /* T minor2(int k) {
-            T result = 0;
+        /* T minor2(int k) {
+             T result = 0;
 
-            for (int i = 0; i < n_size - 1; i++)
-                for (int j = 0; j < m_size - 1; j++)
-                        result +=
-            return result;
-        }*/
+             for (int i = 0; i < n_size - 1; i++)
+                 for (int j = 0; j < m_size - 1; j++)
+                         result +=
+             return result;
+         }*/
 
         T determinant() {
             T result = 0;
-            T **newMatrix2 = new T *[n_size - 1];
+            T **minor = new T *[n_size - 1];
             for (int i = 0; i < n_size; i++)
-                newMatrix2[i] = new T[m_size - 1];
+                minor[i] = new T[m_size - 1];
+
             if ((n_size == m_size) and (n_size <= 3)) {
                 if (n_size == 1)
                     result = matrix[0][0];
                 else if (n_size == 2)
-                    result = (matrix[0][0] * matrix[1][1]) - (matrix[1][2] * matrix[2][1]);  /// ошибка выскаивает
-                else {
-                    for (int j = 0; j < m_size; j++) {
-                        result += pow(-1, 1 + j) * (matrix[0][j] * fillMinor(newMatrix2, j)); //(pow(-1, 1 + j)) *
-                    }
-                }
+                    result = static_cast<T>((matrix[0][0] * matrix[1][1]) - (matrix[0][1] * matrix[1][0]));  /// ошибка выскаивает
+                else
+                    result = (matrix[0][0] * matrix[1][1] * matrix[2][2] + matrix[1][0] * matrix[0][2] * matrix[2][1] + matrix[0][1] * matrix[2][0] * matrix[1][2] - matrix[0][2] * matrix[1][1] * matrix[2][0] - matrix[0][0] * matrix[1][2] * matrix[2][1] - matrix[2][2] * matrix[0][1] * matrix[1][0]);
+                   /* for (int j = 0; j < m_size; j++) {
+                        result += pow(-1, 1 + j) * (matrix[0][j] * fillMinor(minor, j)); //(pow(-1, 1 + j)) *
+                    }*/
+
             }
 
             return result;
+        }
+
+        T& at(unsigned int i , unsigned int j){
+            if (i < n_size and j < m_size)
+                return matrix[i][j];
+            std::abort();
         }
 
         Matrix &operator=(const Matrix &temp) {
@@ -146,27 +154,23 @@ namespace mt {
             int b = 1;
             for (int i = 0; i < n_size; i++)
                 for (int j = 0; j < m_size; j++)
-                    if ((j != n) and (i != 0))
-                        minor[i][j] = matrix[i][j];
-            std::cout << minor[0][1];
-            for (int i = 0; i < n_size - 1; i++)
-                for (int j = 0; j < m_size - 1; j++){
-                    if (i == j)
-                        a *= minor[i][j];
-                    else
-                        b *= minor[i][j];
-                }
-            result = a - b;
+                    if ((j != n) and (i != 0)) {
+                        (j < n and i > 0) ? minor[i-1][j] = matrix[i][j] : ((j > n and i > 0) ? minor[i - 1][j - 1] = matrix[i][j]: a = 1 );
+
+//                        std::cout << " : " << minor[i][j]<< " " << i  << " " << j << std::endl;
+                    }
+
+
+
+            result = (minor[0][0] * minor[1][1]) - (minor[1][2] * minor[2][1]);
             return result;
         }
 
         void deleteMatrix() {
-            for (int i = 0; i < n_size; i++) {
+            for (int i = 0; i < n_size; i++)
                 delete[] matrix[i];
-            }
             delete[] matrix;
         }
-
     };
 
 
