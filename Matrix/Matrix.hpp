@@ -8,12 +8,21 @@
 
 namespace mt {
 
-    template<class T, class T1, class T2>
+    template<class T, int N, int M>
     class Matrix {
     public:
-        Matrix(unsigned int n, unsigned int m) {
+        Matrix( int n,  int m) {
             n_size = n;
             m_size = m;
+            matrix = new T *[n_size];
+            for (int i = 0; i < n_size; i++) {
+                matrix[i] = new T[m_size];
+            }
+            fillMatrix();
+        }
+        Matrix() {
+            n_size = N;
+            m_size = M;
             matrix = new T *[n_size];
             for (int i = 0; i < n_size; i++) {
                 matrix[i] = new T[m_size];
@@ -54,7 +63,7 @@ namespace mt {
                 if (n_size == 1)
                     result = matrix[0][0];
                 else if (n_size == 2)
-                    result = static_cast<T>((matrix[0][0] * matrix[1][1]) - (matrix[0][1] * matrix[1][0]));  /// ошибка выскаивает
+                    result = static_cast<T>((matrix[0][0] * matrix[1][1]) - (matrix[0][1] * matrix[1][0]));
                 else
                     /// гениальное решение
                     result = (matrix[0][0] * matrix[1][1] * matrix[2][2] + matrix[1][0] * matrix[0][2] * matrix[2][1] + matrix[0][1] * matrix[2][0] * matrix[1][2] - matrix[0][2] * matrix[1][1] * matrix[2][0] - matrix[0][0] * matrix[1][2] * matrix[2][1] - matrix[2][2] * matrix[0][1] * matrix[1][0]);
@@ -71,6 +80,10 @@ namespace mt {
             if (i < n_size and j < m_size)
                 return matrix[i][j];
             std::abort();
+        }
+
+        T* operator[](const T &index){
+            return matrix[index];
         }
 
         Matrix &operator=(const Matrix &temp) {
@@ -104,7 +117,6 @@ namespace mt {
         }
 
         Matrix &operator+=(const Matrix &temp) {
-            Matrix newMatrix = temp;
             for (int i = 0; i < n_size; i++)
                 for (int j = 0; j < m_size; j++)
                     matrix[i][j] += temp.matrix[i][j];
@@ -112,7 +124,7 @@ namespace mt {
         }
 
         Matrix operator*(const Matrix temp) {
-            Matrix<T, T1, T2> newMatrix(n_size, temp.m_size);
+            Matrix<T, N, M> newMatrix;
             for (int i = 0; i < n_size; i++)
                 for (int j = 0; j < newMatrix.n_size; j++)
                     for (int k = 0; k < newMatrix.m_size; k++)
@@ -121,7 +133,10 @@ namespace mt {
         }
 
         Matrix &operator*=(const Matrix &temp) {
-            *this = (*this) * temp;
+            for (int i = 0; i < n_size; i++)
+                for (int j = 0; j < n_size; j++)
+                    for (int k = 0; k < m_size; k++)
+                        matrix[i][j] += matrix[i][k] * temp.matrix[k][j];  ///по формуле....
             return *this;
         }
 
@@ -131,6 +146,7 @@ namespace mt {
                     outStream << temp.matrix[i][j] << " ";
                 outStream << std::endl;
             }
+            outStream << std::endl;
             return outStream;
         }
 
@@ -143,8 +159,8 @@ namespace mt {
 
     private:
         T **matrix;
-        T1 n_size;
-        T2 m_size;
+        int n_size;
+        int m_size;
 
         ///Functions
         T fillMinor(T **minor, int n) {   /// заполнить матрицу объектами
